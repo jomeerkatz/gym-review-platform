@@ -43,7 +43,7 @@ public class Gym {
     private GeoPoint geoLocation;
 
     @Field(type = FieldType.Nested)
-    private Address adress;
+    private Address address;
 
     @Field(type = FieldType.Nested)
     private OperatingHours operatingHours;
