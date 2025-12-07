@@ -29,9 +29,15 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth ->
                         // the authorization configurer -> auth is a builder object too where we
-                        // also can define something. I define which HTTP requests are allowed / denied and under what conditions
+                        // also can define something. I define which HTTP requests are allowed / denied and under what
+                        // conditions
                         auth
+                                // allow this path, without authentification, since we want to show images, even when
+                                // the user has no account
+                                .requestMatchers(HttpMethod.GET, "/api/photos/**").permitAll()
                                 // allow preflight OPTIONS requests without authentication (needed for CORS)
+                                // means, browser can ask, can i really send this request. that's the meaning of OPTIONS
+                                // is like GET, DELETE etc. (method)
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                                 // every other request must be authenticated
                                 .anyRequest().authenticated()
@@ -39,7 +45,8 @@ public class SecurityConfig {
                 .oauth2ResourceServer(oauth2 ->
                         // oauth2 is another builder/configurer object but this time
                         // specifically for resource server -> our backend is a resource server
-                        // by writing this, we activate this application acts as a resource server where we use OAuth2 security protocol
+                        // by writing this, we activate this application acts as a resource server where we use OAuth2
+                        // security protocol
                         // this protocol wants to work with JWT/tokens which are coming from Keycloak!
                         // spring is now looking for Authorization: Bearer <token> on every request.
                         oauth2.jwt(jwt ->
