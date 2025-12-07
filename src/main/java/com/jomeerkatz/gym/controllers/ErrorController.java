@@ -6,6 +6,7 @@ import com.jomeerkatz.gym.exceptions.StorageException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 @ControllerAdvice
 @Slf4j
 public class ErrorController {
+
+    // @ExceptionHandler(MethodArgumentNotValidException.class)
 
     @ExceptionHandler(StorageException.class)
     public ResponseEntity<ErrorDto> handleStorageException(StorageException ex) {
