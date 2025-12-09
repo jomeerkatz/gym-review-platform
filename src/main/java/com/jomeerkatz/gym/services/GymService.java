@@ -21,5 +21,7 @@ public interface GymService {
 
     Optional<Gym> getGym(String id);
 
+    void deleteGym(String id);
+
     Gym updateGym(String id, GymCreateUpdateRequest gymCreateUpdateRequest);
 }
