@@ -57,4 +57,12 @@ public class GymController {
                 .map(gym -> ResponseEntity.ok(gymMapper.toGymDto(gym)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
+
+    @PutMapping("/{gym_id}")
+    public ResponseEntity<GymDto> updateRestaurant(@PathVariable("gym_id") String id,
+                                                   @Valid @RequestBody GymCreateUpdateRequestDto requestDto
+                                                   ) {
+        Gym updatedGym = gymService.updateGym(id, gymMapper.toGymCreateUpdateRequest(requestDto));
+        return ResponseEntity.ok(gymMapper.toGymDto(updatedGym));
+    }
 }
