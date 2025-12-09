@@ -32,6 +32,7 @@ public class SecurityConfig {
                         // also can define something. I define which HTTP requests are allowed / denied and under what
                         // conditions
                         auth
+                                .requestMatchers(HttpMethod.GET, "/api/gyms/**").permitAll()
                                 // allow this path, without authentification, since we want to show images, even when
                                 // the user has no account
                                 .requestMatchers(HttpMethod.GET, "/api/photos/**").permitAll()

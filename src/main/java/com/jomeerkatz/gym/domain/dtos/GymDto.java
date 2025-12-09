@@ -31,7 +31,7 @@ public class GymDto {
 
     private List<PhotoDto> photos = new ArrayList<>();
 
-    private List<ReviewDto> review = new ArrayList<>();
+    private List<ReviewDto> reviews = new ArrayList<>();
 
     private UserDto createdBy;
 }
