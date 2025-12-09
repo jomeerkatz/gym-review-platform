@@ -74,6 +74,8 @@ public class GymServiceImpl implements GymService {
     }
 
     @Override
+    public void deleteGym(String id) {
+        gymRepository.deleteById(id);
     public Gym updateGym(String id, GymCreateUpdateRequest request) {
         Gym gym = getGym(id).orElseThrow(() -> new GymNotFoundException("gym doesn't exists with id " + id));
 
