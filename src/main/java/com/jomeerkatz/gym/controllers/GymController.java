@@ -1,5 +1,6 @@
 package com.jomeerkatz.gym.controllers;
 
+import co.elastic.clients.elasticsearch.nodes.Http;
 import com.jomeerkatz.gym.domain.GymCreateUpdateRequest;
 import com.jomeerkatz.gym.domain.dtos.GymCreateUpdateRequestDto;
 import com.jomeerkatz.gym.domain.dtos.GymDto;
@@ -56,5 +57,12 @@ public class GymController {
         return gymService.getGym(gymId)
                 .map(gym -> ResponseEntity.ok(gymMapper.toGymDto(gym)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{gym_id}")
+    // we use void, bec there will not be a body in the response
+    public ResponseEntity<Void> deleteGym(@PathVariable("gym_id") String id) {
+        gymService.deleteGym(id);
+        return ResponseEntity.noContent().build();
     }
 }

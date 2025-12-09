@@ -71,4 +71,9 @@ public class GymServiceImpl implements GymService {
     public Optional<Gym> getGym(String id) {
         return gymRepository.findById(id);
     }
+
+    @Override
+    public void deleteGym(String id) {
+        gymRepository.deleteById(id);
+    }
 }
