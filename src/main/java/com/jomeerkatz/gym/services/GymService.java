@@ -23,4 +23,5 @@ public interface GymService {
 
     void deleteGym(String id);
 
+    Gym updateGym(String id, GymCreateUpdateRequest gymCreateUpdateRequest);
 }
