@@ -20,4 +20,7 @@ public interface GymService {
     );
 
     Optional<Gym> getGym(String id);
+
+    void deleteGym(String id);
+
 }
