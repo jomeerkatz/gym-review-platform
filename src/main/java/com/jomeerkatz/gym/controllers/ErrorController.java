@@ -2,6 +2,7 @@ package com.jomeerkatz.gym.controllers;
 
 import com.jomeerkatz.gym.domain.dtos.ErrorDto;
 import com.jomeerkatz.gym.exceptions.BaseException;
+import com.jomeerkatz.gym.exceptions.GymNotFoundException;
 import com.jomeerkatz.gym.exceptions.StorageException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,18 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 @Slf4j
 public class ErrorController {
+
+    @ExceptionHandler(GymNotFoundException.class)
+    public ResponseEntity<ErrorDto> handleGymNotFoundException(GymNotFoundException ex) {
+        log.error("caught GymNotFoundException", ex);
+
+        ErrorDto errorDto = ErrorDto.builder()
+                .status(HttpStatus.NOT_FOUND.value())
+                .message("the specific gym wasn't found!")
+                .build();
+
+        return new ResponseEntity<>(errorDto, HttpStatus.NOT_FOUND);
+    }
 
      @ExceptionHandler(MethodArgumentNotValidException.class)
      public ResponseEntity<ErrorDto> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex){
