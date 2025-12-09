@@ -20,4 +20,6 @@ public interface GymService {
     );
 
     Optional<Gym> getGym(String id);
+
+    Gym updateGym(String id, GymCreateUpdateRequest gymCreateUpdateRequest);
 }
