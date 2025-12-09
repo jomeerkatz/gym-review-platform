@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -64,5 +65,10 @@ public class GymServiceImpl implements GymService {
         }
 
         return gymRepository.findAll(pageable);
+    }
+
+    @Override
+    public Optional<Gym> getGym(String id) {
+        return gymRepository.findById(id);
     }
 }
