@@ -5,6 +5,8 @@ import com.jomeerkatz.gym.domain.entities.Gym;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Optional;
+
 public interface GymService {
     Gym createGym(GymCreateUpdateRequest request);
 
@@ -16,4 +18,6 @@ public interface GymService {
             Float radius,
             Pageable pageable
     );
+
+    Optional<Gym> getGym(String id);
 }

@@ -16,6 +16,7 @@ import java.util.List;
 public interface GymMapper {
 
     GymCreateUpdateRequest toGymCreateUpdateRequest(GymCreateUpdateRequestDto dto);
+
     GymDto toGymDto(Gym gym);
 
     @Mapping(source = "reviews", target = "totalReviews", qualifiedByName = "populateTotalReviews")
@@ -25,9 +26,4 @@ public interface GymMapper {
     default Integer populateTotalReviews(List<Review> reviewList){
         return reviewList.size();
     }
-
-//    @AfterMapping
-//    default void logSummaryDto(@MappingTarget GymSummaryDto dto) {
-//        System.out.println("SUMMARY DTO ADDRESS: " + dto.getAddress());
-//    }
 }
