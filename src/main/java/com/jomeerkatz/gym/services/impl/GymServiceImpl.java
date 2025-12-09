@@ -5,6 +5,7 @@ import com.jomeerkatz.gym.domain.GymCreateUpdateRequest;
 import com.jomeerkatz.gym.domain.entities.Address;
 import com.jomeerkatz.gym.domain.entities.Gym;
 import com.jomeerkatz.gym.domain.entities.Photo;
+import com.jomeerkatz.gym.exceptions.GymNotFoundException;
 import com.jomeerkatz.gym.repositories.GymRepository;
 import com.jomeerkatz.gym.services.GeoLocationService;
 import com.jomeerkatz.gym.services.GymService;
@@ -70,5 +71,32 @@ public class GymServiceImpl implements GymService {
     @Override
     public Optional<Gym> getGym(String id) {
         return gymRepository.findById(id);
+    }
+
+    @Override
+    public Gym updateGym(String id, GymCreateUpdateRequest request) {
+        Gym gym = getGym(id).orElseThrow(() -> new GymNotFoundException("gym doesn't exists with id " + id));
+
+        GeoLocation geoLocation = geoLocationService.geoLocate(request.getAddress());
+
+        GeoPoint geoPoint = new GeoPoint(geoLocation.getLatitude(), geoLocation.getLongitute());
+
+        List<String> photoIds = request.getPhotoIds();
+
+        List<Photo> photos = photoIds.stream().map(currentPhoto -> Photo.builder()
+                .url(currentPhoto)
+                .uploadDate(LocalDateTime.now())
+                .build()
+        ).toList();
+
+        gym.setName(request.getName());
+        gym.setGymType(request.getGymType());
+        gym.setContactInformation(request.getContactInformation());
+        gym.setAddress(request.getAddress());
+        gym.setGeoLocation(geoPoint);
+        gym.setOperatingHours(request.getOperatingHours());
+        gym.setPhotos(photos);
+
+        return gymRepository.save(gym);
     }
 }
