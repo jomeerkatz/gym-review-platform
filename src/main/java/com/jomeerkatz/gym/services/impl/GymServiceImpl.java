@@ -9,6 +9,8 @@ import com.jomeerkatz.gym.repositories.GymRepository;
 import com.jomeerkatz.gym.services.GeoLocationService;
 import com.jomeerkatz.gym.services.GymService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.geo.GeoPoint;
 import org.springframework.stereotype.Service;
 
@@ -42,5 +44,25 @@ public class GymServiceImpl implements GymService {
                 .build();
 
         return gymRepository.save(gym);
+    }
+
+    @Override
+    // multiple arguments, all can be null - only pageable not
+    public Page<Gym> searchGyms(String query, Float minRating, Float latitude, Float longitude, Float radius, Pageable pageable) {
+        if (null != minRating && (null == query || query.isEmpty())) {
+            return gymRepository.findByAverageRatingGreaterThanEqual(minRating, pageable);
+        }
+
+        Float searchMinRating = minRating == null ? 0f : minRating;
+
+        if (null != query && !query.trim().isEmpty()) {
+            return gymRepository.findByQueryAndMinRating(query, searchMinRating, pageable);
+        }
+
+        if (null != latitude && null != longitude && null != radius) {
+            return gymRepository.findByLocationNear(latitude, longitude, radius, pageable);
+        }
+
+        return gymRepository.findAll(pageable);
     }
 }
