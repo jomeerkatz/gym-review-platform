@@ -11,8 +11,11 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "/api/gyms")
@@ -39,8 +42,19 @@ public class GymController {
             @RequestParam(defaultValue = "1") int page, // actually starting at index  0, so we need to get sure to
             // implement it right in frontend
             @RequestParam(defaultValue = "20") int size
-    ){
+    ) {
+        System.out.println("🔎 searchGyms called with:");
+        System.out.println("   latitude = " + latitude);
+        System.out.println("   longitude = " + longitude);
+        System.out.println("   radius = " + radius);
         Page<Gym> searchResult = gymService.searchGyms(query, minRating, latitude, longitude, radius, PageRequest.of(page - 1, size));
         return searchResult.map(gymMapper::toSummaryDto);
+    }
+
+    @GetMapping("/{gym_id}")
+    public ResponseEntity<GymDto> getGym(@PathVariable("gym_id") String gymId) {
+        return gymService.getGym(gymId)
+                .map(gym -> ResponseEntity.ok(gymMapper.toGymDto(gym)))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 }
