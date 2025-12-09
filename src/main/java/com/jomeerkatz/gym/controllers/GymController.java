@@ -64,5 +64,11 @@ public class GymController {
     public ResponseEntity<Void> deleteGym(@PathVariable("gym_id") String id) {
         gymService.deleteGym(id);
         return ResponseEntity.noContent().build();
+    @PutMapping("/{gym_id}")
+    public ResponseEntity<GymDto> updateRestaurant(@PathVariable("gym_id") String id,
+                                                   @Valid @RequestBody GymCreateUpdateRequestDto requestDto
+                                                   ) {
+        Gym updatedGym = gymService.updateGym(id, gymMapper.toGymCreateUpdateRequest(requestDto));
+        return ResponseEntity.ok(gymMapper.toGymDto(updatedGym));
     }
 }
