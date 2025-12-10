@@ -3,6 +3,7 @@ package com.jomeerkatz.gym.controllers;
 import com.jomeerkatz.gym.domain.dtos.ErrorDto;
 import com.jomeerkatz.gym.exceptions.BaseException;
 import com.jomeerkatz.gym.exceptions.GymNotFoundException;
+import com.jomeerkatz.gym.exceptions.ReviewNotAllowedException;
 import com.jomeerkatz.gym.exceptions.StorageException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,18 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 @Slf4j
 public class ErrorController {
+
+    @ExceptionHandler(ReviewNotAllowedException.class)
+    public ResponseEntity<ErrorDto> handleReviewNotAllowedException(ReviewNotAllowedException ex) {
+        log.error("caught Review Not Allowed Exception", ex);
+
+        ErrorDto errorDto = ErrorDto.builder()
+                .status(HttpStatus.BAD_REQUEST.value())
+                .message("the specific review cannot be created or updated")
+                .build();
+
+        return new ResponseEntity<>(errorDto, HttpStatus.BAD_REQUEST);
+    }
 
     @ExceptionHandler(GymNotFoundException.class)
     public ResponseEntity<ErrorDto> handleGymNotFoundException(GymNotFoundException ex) {
