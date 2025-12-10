@@ -3,6 +3,7 @@ package com.jomeerkatz.gym.controllers;
 import com.jomeerkatz.gym.domain.ReviewUpdateCreateRequest;
 import com.jomeerkatz.gym.domain.dtos.ReviewCreateUpdateRequestDto;
 import com.jomeerkatz.gym.domain.dtos.ReviewDto;
+import com.jomeerkatz.gym.domain.dtos.UserDto;
 import com.jomeerkatz.gym.domain.entities.Review;
 import com.jomeerkatz.gym.domain.entities.User;
 import com.jomeerkatz.gym.mappers.ReviewMapper;
@@ -65,6 +66,19 @@ public class ReviewController {
         return reviewService.getReview(gym_id, review_id).map(reviewMapper::toDto).map(ResponseEntity::ok).orElseGet(
                 () -> ResponseEntity.noContent().build()
         );
+    }
+
+    @PutMapping(path = "/{reviewId}")
+    public ResponseEntity<ReviewDto> updateReview(@PathVariable("gym_id") String gym_id,
+                                                  @PathVariable("reviewId") String review_id,
+                                                  @Valid @RequestBody ReviewCreateUpdateRequestDto review,
+                                                  @AuthenticationPrincipal Jwt jwt // we need the user who wants to do
+                                                  // the update bec only the user who created the review, can update it
+    ){
+        ReviewUpdateCreateRequest reviewUpdateCreateRequest = reviewMapper.toReviewUpdateCreate(review);
+        User user = jwtToUser(jwt);
+        Review updatedReview = reviewService.updateReview(user, gym_id, review_id, reviewUpdateCreateRequest);
+        return ResponseEntity.ok(reviewMapper.toDto(updatedReview));
     }
 
     private User jwtToUser(Jwt jwt){
