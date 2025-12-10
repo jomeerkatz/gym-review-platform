@@ -17,6 +17,7 @@ public interface GymMapper {
 
     GymCreateUpdateRequest toGymCreateUpdateRequest(GymCreateUpdateRequestDto dto);
 
+    @Mapping(source = "reviews", target = "totalReviews", qualifiedByName = "populateTotalReviews")
     GymDto toGymDto(Gym gym);
 
     @Mapping(source = "reviews", target = "totalReviews", qualifiedByName = "populateTotalReviews")
