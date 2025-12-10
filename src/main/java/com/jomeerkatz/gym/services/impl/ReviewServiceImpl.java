@@ -7,19 +7,16 @@ import com.jomeerkatz.gym.exceptions.ReviewNotAllowedException;
 import com.jomeerkatz.gym.repositories.GymRepository;
 import com.jomeerkatz.gym.services.ReviewService;
 import lombok.AllArgsConstructor;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.elasticsearch.annotations.Field;
-import org.springframework.data.elasticsearch.annotations.FieldType;
-import org.springframework.data.elasticsearch.annotations.GeoPointField;
-import org.springframework.data.elasticsearch.core.geo.GeoPoint;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -108,9 +105,9 @@ public class ReviewServiceImpl implements ReviewService {
             // Map the requested property to a concrete comparison strategy
             Comparator<Review> comparator = switch (property) {
                 case "datePosted" -> Comparator.comparing(Review::getDatePosted);
-                case "rating"     -> Comparator.comparing(Review::getRating);
+                case "rating" -> Comparator.comparing(Review::getRating);
                 // Fallback: sort by newest first if the client sends an unknown property
-                default           -> Comparator.comparing(Review::getDatePosted);
+                default -> Comparator.comparing(Review::getDatePosted);
             };
 
             // Apply direction: ASC uses the comparator as-is, DESC reverses it
@@ -145,6 +142,54 @@ public class ReviewServiceImpl implements ReviewService {
     public Optional<Review> getReview(String gymId, String reviewId) {
         Gym gym = getGymOrThrow(gymId);
         List<Review> reviews = gym.getReviews();
+        return getReviewFromGym(reviewId, gym);
+    }
+
+    private static Optional<Review> getReviewFromGym(String reviewId, Gym gym) {
         return gym.getReviews().stream().filter(currentReview -> currentReview.getId().equals(reviewId)).findFirst();
+    }
+
+    @Override
+    public Review updateReview(User user, String gymId, String reviewId, ReviewUpdateCreateRequest updatedReview) {
+        Gym gym = getGymOrThrow(gymId);
+        String userId = user.getId();
+        Review toUpdatedReview = getReviewFromGym(reviewId, gym)
+                .orElseThrow(() ->
+                        new ReviewNotAllowedException("review does't exist with the id: " + reviewId));
+
+        if (!userId.equals(toUpdatedReview.getWrittenBy().getId())) {
+            throw new ReviewNotAllowedException("User can not edit another User's review!");
+        }
+
+        if (LocalDateTime.now().isAfter(toUpdatedReview.getLastEdited().plusHours(24))) {
+            throw new ReviewNotAllowedException("User can not edit review after 48 hours!");
+        }
+
+        toUpdatedReview.setContent(updatedReview.getContent());
+        toUpdatedReview.setRating(updatedReview.getRating());
+        toUpdatedReview.setLastEdited(LocalDateTime.now());
+
+        toUpdatedReview.setPhotos(
+                updatedReview.getPhotoIds()
+                        .stream()
+                        .map(currentPhotoUrl -> Photo.builder()
+                                .url(currentPhotoUrl)
+                                .uploadDate(LocalDateTime.now())
+                                .build()).toList());
+
+        updateAverageGymRating(gym);
+
+        List<Review> reviewsFromDiffUsern = gym.getReviews() // go through all reviews and find the right one to update
+                .stream()
+                .filter(currentReview ->
+                        !reviewId.equals(currentReview.getId())).collect(Collectors.toList());
+
+        reviewsFromDiffUsern.add(toUpdatedReview);
+
+        gym.setReviews(reviewsFromDiffUsern);
+
+        gymRepository.save(gym);
+
+        return toUpdatedReview;
     }
 }
