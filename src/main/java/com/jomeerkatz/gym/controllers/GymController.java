@@ -44,10 +44,6 @@ public class GymController {
             // implement it right in frontend
             @RequestParam(defaultValue = "20") int size
     ) {
-        System.out.println("🔎 searchGyms called with:");
-        System.out.println("   latitude = " + latitude);
-        System.out.println("   longitude = " + longitude);
-        System.out.println("   radius = " + radius);
         Page<Gym> searchResult = gymService.searchGyms(query, minRating, latitude, longitude, radius, PageRequest.of(page - 1, size));
         return searchResult.map(gymMapper::toSummaryDto);
     }
@@ -64,6 +60,8 @@ public class GymController {
     public ResponseEntity<Void> deleteGym(@PathVariable("gym_id") String id) {
         gymService.deleteGym(id);
         return ResponseEntity.noContent().build();
+    }
+
     @PutMapping("/{gym_id}")
     public ResponseEntity<GymDto> updateRestaurant(@PathVariable("gym_id") String id,
                                                    @Valid @RequestBody GymCreateUpdateRequestDto requestDto
