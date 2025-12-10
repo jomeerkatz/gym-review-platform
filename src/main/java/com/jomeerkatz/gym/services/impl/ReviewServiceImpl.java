@@ -140,4 +140,11 @@ public class ReviewServiceImpl implements ReviewService {
         return gymRepository.findById(gymId).orElseThrow(
                 () -> new GymNotFoundException("gym could not found with id:" + gymId));
     }
+
+    @Override
+    public Optional<Review> getReview(String gymId, String reviewId) {
+        Gym gym = getGymOrThrow(gymId);
+        List<Review> reviews = gym.getReviews();
+        return gym.getReviews().stream().filter(currentReview -> currentReview.getId().equals(reviewId)).findFirst();
+    }
 }
