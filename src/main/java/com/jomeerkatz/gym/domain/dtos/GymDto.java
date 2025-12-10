@@ -23,6 +23,8 @@ public class GymDto {
 
     private Float averageRating;
 
+    private Integer totalReviews;
+
     private GeoPointDto geoLocation;
 
     private AddressDto address;
