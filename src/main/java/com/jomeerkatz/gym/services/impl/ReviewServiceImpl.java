@@ -150,14 +150,17 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public Review updateReview(User user, String gymId, String reviewId, ReviewUpdateCreateRequest updatedReview) {
+    public Review updateReview(User user,
+                               String gymId,
+                               String reviewId,
+                               ReviewUpdateCreateRequest updatedReview)
+    {
         Gym gym = getGymOrThrow(gymId);
-        String userId = user.getId();
         Review toUpdatedReview = getReviewFromGym(reviewId, gym)
                 .orElseThrow(() ->
-                        new ReviewNotAllowedException("review does't exist with the id: " + reviewId));
+                        new ReviewNotAllowedException("review doesn't exist with the id: " + reviewId));
 
-        if (!userId.equals(toUpdatedReview.getWrittenBy().getId())) {
+        if (!user.getId().equals(toUpdatedReview.getWrittenBy().getId())) {
             throw new ReviewNotAllowedException("User can not edit another User's review!");
         }
 
@@ -194,15 +197,24 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public void deleteReview(String gymId, String reviewId) {
-        Gym savedGym = getGymOrThrow(gymId);
-        List<Review> reviewsNotFromUser = savedGym.getReviews().stream().filter(currentReview ->
+    public void deleteReview(User user, String gymId, String reviewId) {
+        Gym gym = getGymOrThrow(gymId);
+        String currentUserId = user.getId();
+        Review reviewToDelete = getReviewFromGym(reviewId, gym).orElseThrow(
+                () -> new ReviewNotAllowedException("review doesn't exist with the id: " + reviewId)
+        );
+
+        if (!user.getId().equals(reviewToDelete.getWrittenBy().getId())) {
+            throw new ReviewNotAllowedException("User can not delete another User's review!");
+        }
+
+        List<Review> reviewsNotFromUser = gym.getReviews().stream().filter(currentReview ->
                 !reviewId.equals(currentReview.getId())).collect(Collectors.toList());
 
-        savedGym.setReviews(reviewsNotFromUser);
+        gym.setReviews(reviewsNotFromUser);
 
-        updateAverageGymRating(savedGym);
+        updateAverageGymRating(gym);
 
-        gymRepository.save(savedGym);
+        gymRepository.save(gym);
     }
 }

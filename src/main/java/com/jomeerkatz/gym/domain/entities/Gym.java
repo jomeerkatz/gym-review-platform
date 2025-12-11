@@ -39,6 +39,9 @@ public class Gym {
     @Field(type = FieldType.Float)
     private Float averageRating;
 
+    @Field(type = FieldType.Integer)
+    private Integer totalReviews;
+
     @GeoPointField
     private GeoPoint geoLocation;
 

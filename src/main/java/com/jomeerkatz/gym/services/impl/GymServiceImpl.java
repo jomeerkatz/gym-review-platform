@@ -16,6 +16,7 @@ import org.springframework.data.elasticsearch.core.geo.GeoPoint;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,6 +43,8 @@ public class GymServiceImpl implements GymService {
                 .gymType(request.getGymType())
                 .operatingHours(request.getOperatingHours())
                 .averageRating(0F)
+                .totalReviews(0)
+                .reviews(Collections.emptyList())
                 .photos(photoList)
                 .build();
 

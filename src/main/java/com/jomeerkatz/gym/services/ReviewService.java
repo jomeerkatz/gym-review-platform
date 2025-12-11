@@ -14,6 +14,6 @@ public interface ReviewService {
     Review createReview(User author, String gymId, ReviewUpdateCreateRequest review);
     Page<Review> listReviews(String id, Pageable pageable);
     Optional<Review> getReview(String gymId, String reviewId);
-    Review updateReview(User author, String gymId, String reviewId, ReviewUpdateCreateRequest review);
-    void deleteReview(String gymId, String reviewId);
+    Review updateReview(User user, String gymId, String reviewId, ReviewUpdateCreateRequest review);
+    void deleteReview(User user, String gymId, String reviewId);
 }

@@ -25,6 +25,9 @@ public interface GymMapper {
 
     @Named("populateTotalReviews")
     default Integer populateTotalReviews(List<Review> reviewList){
+        if (reviewList == null || reviewList.isEmpty()) {
+            return 0;
+        }
         return reviewList.size();
     }
 }
