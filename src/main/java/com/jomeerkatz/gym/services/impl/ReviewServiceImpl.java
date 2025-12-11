@@ -179,17 +179,30 @@ public class ReviewServiceImpl implements ReviewService {
 
         updateAverageGymRating(gym);
 
-        List<Review> reviewsFromDiffUsern = gym.getReviews() // go through all reviews and find the right one to update
+        List<Review> reviewsNotFromUser = gym.getReviews() // go through all reviews and find the right one to update
                 .stream()
                 .filter(currentReview ->
                         !reviewId.equals(currentReview.getId())).collect(Collectors.toList());
 
-        reviewsFromDiffUsern.add(toUpdatedReview);
+        reviewsNotFromUser.add(toUpdatedReview);
 
-        gym.setReviews(reviewsFromDiffUsern);
+        gym.setReviews(reviewsNotFromUser);
 
         gymRepository.save(gym);
 
         return toUpdatedReview;
+    }
+
+    @Override
+    public void deleteReview(String gymId, String reviewId) {
+        Gym savedGym = getGymOrThrow(gymId);
+        List<Review> reviewsNotFromUser = savedGym.getReviews().stream().filter(currentReview ->
+                !reviewId.equals(currentReview.getId())).collect(Collectors.toList());
+
+        savedGym.setReviews(reviewsNotFromUser);
+
+        updateAverageGymRating(savedGym);
+
+        gymRepository.save(savedGym);
     }
 }
