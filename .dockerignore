@@ -1,0 +1,40 @@
+# Build artifacts (wird im Dockerfile neu gebaut)
+target/
+
+# Uploads folder (lokale Entwicklungs-Uploads)
+uploads/
+
+# Frontend (separater Railway Service)
+gym-review-frontend/
+node_modules/
+
+# IDE-spezifische Files
+.idea/
+.run/
+*.iml
+
+# Git
+.git/
+.github/
+.gitignore
+.gitattributes
+
+# Docker Files (nicht im Image benötigt)
+docker-compose.yaml
+.dockerignore
+
+# Dokumentation
+README.md
+HELP.md
+
+# Maven Wrapper JAR (wird neu geladen im Build)
+.mvn/wrapper/maven-wrapper.jar
+
+# Logs & temporäre Files
+*.log
+*.tmp
+.DS_Store
+
+# Test coverage reports
+coverage/
+*.coverage
