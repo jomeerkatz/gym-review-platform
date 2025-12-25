@@ -28,7 +28,6 @@ import java.util.Optional;
 // with different log levels (info, warn, error, debug).
 // Lombok creates the logger automatically, so you can use log.info(), log.error(), etc.
 @Slf4j
-
 public class FileSystemStorageService implements StorageService {
 
     // with :uploads, we set a default
