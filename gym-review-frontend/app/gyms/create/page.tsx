@@ -21,9 +21,9 @@ import {
 } from "../../lib/types";
 
 // Backend configuration
-const BACKEND_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080";
-const CREATE_GYM_ENDPOINT = `${BACKEND_BASE_URL}/api/gyms`;
-const UPLOAD_PHOTO_ENDPOINT = `${BACKEND_BASE_URL}/api/photos`;
+const BACKEND_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
+const CREATE_GYM_ENDPOINT = `${BACKEND_BASE_URL}/gyms`;
+const UPLOAD_PHOTO_ENDPOINT = `${BACKEND_BASE_URL}/photos`;
 const TOKEN_STORAGE_KEY = "kc_access_token";
 
 // Days of the week for operating hours

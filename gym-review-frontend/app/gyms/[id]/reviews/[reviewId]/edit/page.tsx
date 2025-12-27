@@ -10,9 +10,9 @@ import {
 import { isLoggedIn } from "../../../../../lib/keycloak";
 
 // Backend configuration
-const BACKEND_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080";
-const UPLOAD_PHOTO_ENDPOINT = `${BACKEND_BASE_URL}/api/photos`;
-const PHOTOS_ENDPOINT = `${BACKEND_BASE_URL}/api/photos`;
+const BACKEND_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
+const UPLOAD_PHOTO_ENDPOINT = `${BACKEND_BASE_URL}/photos`;
+const PHOTOS_ENDPOINT = `${BACKEND_BASE_URL}/photos`;
 const TOKEN_STORAGE_KEY = "kc_access_token";
 const MAX_PHOTOS = 5;
 
@@ -69,7 +69,7 @@ export default function EditReviewPage() {
     setReviewError(null);
 
     try {
-      const url = `${BACKEND_BASE_URL}/api/gyms/${encodeURIComponent(
+      const url = `${BACKEND_BASE_URL}/gyms/${encodeURIComponent(
         gymId
       )}/reviews/${encodeURIComponent(reviewId)}`;
       console.log("📡 Fetching review from:", url);
@@ -349,7 +349,7 @@ export default function EditReviewPage() {
 
       // Send PUT request
       const response = await fetch(
-        `${BACKEND_BASE_URL}/api/gyms/${encodeURIComponent(
+        `${BACKEND_BASE_URL}/gyms/${encodeURIComponent(
           gymId
         )}/reviews/${encodeURIComponent(reviewId)}`,
         {

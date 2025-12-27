@@ -17,10 +17,10 @@ import { isLoggedIn, getAccessToken } from "../../lib/keycloak";
 
 // Backend configuration
 const BACKEND_BASE_URL =
-  process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080";
-const GYM_ENDPOINT = `${BACKEND_BASE_URL}/api/gyms`;
-const PHOTOS_ENDPOINT = `${BACKEND_BASE_URL}/api/photos`;
-const UPLOAD_PHOTO_ENDPOINT = `${BACKEND_BASE_URL}/api/photos`;
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
+const GYM_ENDPOINT = `${BACKEND_BASE_URL}/gyms`;
+const PHOTOS_ENDPOINT = `${BACKEND_BASE_URL}/photos`;
+const UPLOAD_PHOTO_ENDPOINT = `${BACKEND_BASE_URL}/photos`;
 const DEFAULT_RADIUS = 10000; // 10km in meters
 const TOKEN_STORAGE_KEY = "kc_access_token";
 
@@ -529,7 +529,7 @@ export default function GymDetailPage() {
         sort: `${currentSortBy},${currentSortDirection}`,
       });
 
-      const url = `${BACKEND_BASE_URL}/api/gyms/${encodeURIComponent(
+      const url = `${BACKEND_BASE_URL}/gyms/${encodeURIComponent(
         gymId
       )}/reviews?${params.toString()}`;
       console.log("📡 Fetching sorted reviews from:", url);
@@ -1257,7 +1257,7 @@ export default function GymDetailPage() {
     try {
       // Send DELETE request
       const response = await fetch(
-        `${BACKEND_BASE_URL}/api/gyms/${encodeURIComponent(
+        `${BACKEND_BASE_URL}/gyms/${encodeURIComponent(
           gymId
         )}/reviews/${encodeURIComponent(reviewToDelete)}`,
         {

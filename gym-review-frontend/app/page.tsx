@@ -12,9 +12,9 @@ import {
 import { GymSummaryDto, PageResponse } from "./lib/types";
 
 // Backend configuration
-const BACKEND_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080";
-const SEARCH_GYMS_ENDPOINT = `${BACKEND_BASE_URL}/api/gyms`;
-const PHOTOS_ENDPOINT = `${BACKEND_BASE_URL}/api/photos`;
+const BACKEND_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
+const SEARCH_GYMS_ENDPOINT = `${BACKEND_BASE_URL}/gyms`;
+const PHOTOS_ENDPOINT = `${BACKEND_BASE_URL}/photos`;
 
 // Gym Card Component
 function GymCard({ gym }: { gym: GymSummaryDto }) {

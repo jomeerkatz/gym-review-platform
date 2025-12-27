@@ -9,9 +9,10 @@
 
 // Keycloak Konfiguration
 const KEYCLOAK_BASE_URL =
-  process.env.NEXT_PUBLIC_KEYCLOAK_BASE_URL || "http://localhost:9090";
-const REALM = "gym-review";
-const CLIENT_ID = "gym-review-app";
+  process.env.NEXT_PUBLIC_KEYCLOAK_URL || "http://localhost:9090";
+const REALM = process.env.NEXT_PUBLIC_KEYCLOAK_REALM || "gym-review";
+const CLIENT_ID =
+  process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID || "gym-review-app";
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
 const REDIRECT_URI = `${BASE_URL}/keycloak-callback`;
 

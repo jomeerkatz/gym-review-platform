@@ -7,8 +7,8 @@ import { ReviewCreateUpdateRequestDto } from "../../../../lib/types";
 import { isLoggedIn, getAccessToken } from "../../../../lib/keycloak";
 
 // Backend configuration
-const BACKEND_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080";
-const UPLOAD_PHOTO_ENDPOINT = `${BACKEND_BASE_URL}/api/photos`;
+const BACKEND_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
+const UPLOAD_PHOTO_ENDPOINT = `${BACKEND_BASE_URL}/photos`;
 const TOKEN_STORAGE_KEY = "kc_access_token";
 const MAX_PHOTOS = 5;
 
@@ -228,7 +228,7 @@ export default function CreateReviewPage() {
 
       // Send POST request
       const response = await fetch(
-        `${BACKEND_BASE_URL}/api/gyms/${encodeURIComponent(gymId)}/reviews`,
+        `${BACKEND_BASE_URL}/gyms/${encodeURIComponent(gymId)}/reviews`,
         {
           method: "POST",
           headers: {
