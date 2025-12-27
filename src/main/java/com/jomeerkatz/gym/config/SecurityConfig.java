@@ -36,6 +36,7 @@ public class SecurityConfig {
                                 // allow this path, without authentification, since we want to show images, even when
                                 // the user has no account
                                 .requestMatchers(HttpMethod.GET, "/api/photos/**").permitAll()
+                                .requestMatchers(HttpMethod.HEAD, "/api/photos/**").permitAll()
                                 // allow preflight OPTIONS requests without authentication (needed for CORS)
                                 // means, browser can ask, can i really send this request. that's the meaning of OPTIONS
                                 // is like GET, DELETE etc. (method)
