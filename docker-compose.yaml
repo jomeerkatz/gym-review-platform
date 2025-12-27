@@ -42,12 +42,12 @@ services:
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
-      KC_DB: h2-file
+      KC_DB: dev-file
+      KC_DB_FILE: /opt/keycloak/data/keycloak.db
     volumes:
       - keycloak-data:/opt/keycloak/data
     command:
       - start-dev
-      - --db=dev-file
 
 volumes:
   elasticsearch-data:
