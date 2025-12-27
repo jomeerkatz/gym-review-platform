@@ -12,7 +12,7 @@ import {
 import { GymSummaryDto, PageResponse } from "./lib/types";
 
 // Backend configuration
-const BACKEND_BASE_URL = "http://localhost:8080";
+const BACKEND_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080";
 const SEARCH_GYMS_ENDPOINT = `${BACKEND_BASE_URL}/api/gyms`;
 const PHOTOS_ENDPOINT = `${BACKEND_BASE_URL}/api/photos`;
 
@@ -377,7 +377,7 @@ export default function Home() {
                 {isNetworkError && (
                   <p className="text-xs text-red-600 dark:text-red-400 mb-4">
                     💡 Make sure the backend server is running on{" "}
-                    <span className="font-mono">http://localhost:8080</span>
+                    <span className="font-mono">{BACKEND_BASE_URL}</span>
                   </p>
                 )}
                 <button

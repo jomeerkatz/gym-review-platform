@@ -16,7 +16,8 @@ import {
 import { isLoggedIn, getAccessToken } from "../../lib/keycloak";
 
 // Backend configuration
-const BACKEND_BASE_URL = "http://localhost:8080";
+const BACKEND_BASE_URL =
+  process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080";
 const GYM_ENDPOINT = `${BACKEND_BASE_URL}/api/gyms`;
 const PHOTOS_ENDPOINT = `${BACKEND_BASE_URL}/api/photos`;
 const UPLOAD_PHOTO_ENDPOINT = `${BACKEND_BASE_URL}/api/photos`;

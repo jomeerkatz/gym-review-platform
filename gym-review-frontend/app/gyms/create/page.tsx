@@ -21,7 +21,7 @@ import {
 } from "../../lib/types";
 
 // Backend configuration
-const BACKEND_BASE_URL = "http://localhost:8080";
+const BACKEND_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080";
 const CREATE_GYM_ENDPOINT = `${BACKEND_BASE_URL}/api/gyms`;
 const UPLOAD_PHOTO_ENDPOINT = `${BACKEND_BASE_URL}/api/photos`;
 const TOKEN_STORAGE_KEY = "kc_access_token";

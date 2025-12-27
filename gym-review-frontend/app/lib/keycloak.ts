@@ -8,7 +8,8 @@
  */
 
 // Keycloak Konfiguration
-const KEYCLOAK_BASE_URL = "http://localhost:9090";
+const KEYCLOAK_BASE_URL =
+  process.env.NEXT_PUBLIC_KEYCLOAK_BASE_URL || "http://localhost:9090";
 const REALM = "gym-review";
 const CLIENT_ID = "gym-review-app";
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
