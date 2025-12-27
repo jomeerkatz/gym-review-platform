@@ -8,19 +8,43 @@
  */
 
 // Keycloak Konfiguration - Funktionen um sicherzustellen, dass Environment Variables zur Laufzeit geladen werden
+// WICHTIG: Diese Funktionen lesen die Werte zur Laufzeit, nicht zur Build-Zeit
 function getKeycloakBaseUrl(): string {
+  if (typeof window !== "undefined") {
+    // Im Browser: Versuche zuerst aus window.__ENV zu lesen (falls gesetzt)
+    const envKeycloakUrl = (window as any).__ENV?.NEXT_PUBLIC_KEYCLOAK_URL;
+    if (envKeycloakUrl) return envKeycloakUrl;
+  }
+  // Fallback zu process.env (wird zur Build-Zeit ersetzt, aber sollte funktionieren)
   return process.env.NEXT_PUBLIC_KEYCLOAK_URL || "http://localhost:9090";
 }
 
 function getRealm(): string {
+  if (typeof window !== "undefined") {
+    const envRealm = (window as any).__ENV?.NEXT_PUBLIC_KEYCLOAK_REALM;
+    if (envRealm) return envRealm;
+  }
   return process.env.NEXT_PUBLIC_KEYCLOAK_REALM || "gym-review";
 }
 
 function getClientId(): string {
+  if (typeof window !== "undefined") {
+    const envClientId = (window as any).__ENV?.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID;
+    if (envClientId) return envClientId;
+  }
   return process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID || "gym-review-app";
 }
 
 function getBaseUrl(): string {
+  if (typeof window !== "undefined") {
+    // Im Browser: Verwende window.location.origin als Fallback
+    const envBaseUrl = (window as any).__ENV?.NEXT_PUBLIC_BASE_URL;
+    if (envBaseUrl) return envBaseUrl;
+    // Fallback zu window.location.origin wenn verfügbar
+    if (window.location && window.location.origin) {
+      return process.env.NEXT_PUBLIC_BASE_URL || window.location.origin;
+    }
+  }
   return process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
 }
 
@@ -133,18 +157,42 @@ export async function buildAuthUrl(): Promise<string> {
   // PKCE Parameter generieren
   const { challenge } = await generatePKCE();
 
+  // Verwende die Funktionen, die zur Laufzeit die Werte lesen
+  const keycloakUrl = getKeycloakBaseUrl();
+  const realm = getRealm();
+  const clientId = getClientId();
+  const baseUrl = getBaseUrl();
+  const redirectUri = getRedirectUri();
+  const authEndpoint = getAuthEndpoint();
+
+  // Debug logging (immer, um zu sehen was verwendet wird)
+  console.log("🔍 Keycloak Config:", {
+    keycloakUrl,
+    realm,
+    clientId,
+    baseUrl,
+    redirectUri,
+    authEndpoint,
+    envKeycloakUrl: process.env.NEXT_PUBLIC_KEYCLOAK_URL,
+    envBaseUrl: process.env.NEXT_PUBLIC_BASE_URL,
+  });
+
   // URL Parameter zusammenbauen
   const params = new URLSearchParams({
     response_type: "code", // Authorization Code Flow
-    client_id: getClientId(), // Unsere Client ID
-    redirect_uri: getRedirectUri(), // Wohin Keycloak nach dem Login weiterleitet
+    client_id: clientId, // Unsere Client ID
+    redirect_uri: redirectUri, // Wohin Keycloak nach dem Login weiterleitet
     scope: "openid", // OpenID Connect Scope
     code_challenge: challenge, // PKCE: Challenge (Hash des Verifiers)
     code_challenge_method: "S256", // PKCE: SHA256 als Hash-Methode
   });
 
   // Vollständige URL zurückgeben
-  return `${getAuthEndpoint()}?${params.toString()}`;
+  const finalUrl = `${authEndpoint}?${params.toString()}`;
+
+  console.log("🔗 Final Auth URL:", finalUrl);
+
+  return finalUrl;
 }
 
 /**
