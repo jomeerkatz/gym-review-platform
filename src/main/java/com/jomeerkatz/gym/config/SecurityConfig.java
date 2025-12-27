@@ -80,7 +80,7 @@ public class SecurityConfig {
         // allow your Next.js frontend in dev
         configuration.setAllowedOrigins(Arrays.asList(
                 "http://localhost:3000",
-                "https://gym-frontend.up.railway.app"  // Deine Production URL
+                "https://glorious-nourishment-production.up.railway.app"  // Deine Production URL
         ));
         // allow common HTTP methods including OPTIONS (for preflight)
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
