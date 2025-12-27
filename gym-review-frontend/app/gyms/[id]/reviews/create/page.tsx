@@ -40,14 +40,26 @@ export default function CreateReviewPage() {
   // Check authentication on mount
   useEffect(() => {
     if (typeof window !== "undefined") {
+      // Check if token exists first
+      const token = localStorage.getItem("kc_access_token");
+      
+      if (!token) {
+        router.push("/");
+        return;
+      }
+      
+      // Then check if logged in (which also validates expiry)
       const loggedIn = isLoggedIn();
       setHasToken(loggedIn);
+      
       if (!loggedIn) {
         // Redirect to home if not logged in
         router.push("/");
       }
     }
-  }, [router]);
+    // Only run once on mount - router is stable and doesn't need to be in deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   /**
    * Handle file selection for photos
