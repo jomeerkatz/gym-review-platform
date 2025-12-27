@@ -6,9 +6,12 @@ import Link from "next/link";
 import { ReviewCreateUpdateRequestDto } from "../../../../lib/types";
 import { isLoggedIn, getAccessToken } from "../../../../lib/keycloak";
 
-// Backend configuration
-const BACKEND_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
-const UPLOAD_PHOTO_ENDPOINT = `${BACKEND_BASE_URL}/photos`;
+import { getBackendBaseUrl } from "../../../../lib/config";
+
+// Backend configuration - Funktionen um sicherzustellen, dass Environment Variables zur Laufzeit geladen werden
+function getUploadPhotoEndpoint(): string {
+  return `${getBackendBaseUrl()}/photos`;
+}
 const TOKEN_STORAGE_KEY = "kc_access_token";
 const MAX_PHOTOS = 5;
 
@@ -123,7 +126,7 @@ export default function CreateReviewPage() {
       const formData = new FormData();
       formData.append("file", file);
 
-      const response = await fetch(UPLOAD_PHOTO_ENDPOINT, {
+      const response = await fetch(getUploadPhotoEndpoint(), {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -228,7 +231,7 @@ export default function CreateReviewPage() {
 
       // Send POST request
       const response = await fetch(
-        `${BACKEND_BASE_URL}/gyms/${encodeURIComponent(gymId)}/reviews`,
+        `${getBackendBaseUrl()}/gyms/${encodeURIComponent(gymId)}/reviews`,
         {
           method: "POST",
           headers: {

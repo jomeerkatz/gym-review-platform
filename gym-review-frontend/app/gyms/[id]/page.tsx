@@ -15,12 +15,20 @@ import {
 } from "../../lib/types";
 import { isLoggedIn, getAccessToken } from "../../lib/keycloak";
 
-// Backend configuration
-const BACKEND_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
-const GYM_ENDPOINT = `${BACKEND_BASE_URL}/gyms`;
-const PHOTOS_ENDPOINT = `${BACKEND_BASE_URL}/photos`;
-const UPLOAD_PHOTO_ENDPOINT = `${BACKEND_BASE_URL}/photos`;
+import { getBackendBaseUrl } from "../../lib/config";
+
+// Backend configuration - Funktionen um sicherzustellen, dass Environment Variables zur Laufzeit geladen werden
+function getGymEndpoint(): string {
+  return `${getBackendBaseUrl()}/gyms`;
+}
+
+function getPhotosEndpoint(): string {
+  return `${getBackendBaseUrl()}/photos`;
+}
+
+function getUploadPhotoEndpoint(): string {
+  return `${getBackendBaseUrl()}/photos`;
+}
 const DEFAULT_RADIUS = 10000; // 10km in meters
 const TOKEN_STORAGE_KEY = "kc_access_token";
 
@@ -41,7 +49,9 @@ type DayOfWeek = (typeof DAYS_OF_WEEK)[number];
 function GymCard({ gym }: { gym: GymSummaryDto }) {
   const [imageError, setImageError] = useState(false);
   const firstPhoto = gym.photos && gym.photos.length > 0 ? gym.photos[0] : null;
-  const imageUrl = firstPhoto ? `${PHOTOS_ENDPOINT}/${firstPhoto.url}` : null;
+  const imageUrl = firstPhoto
+    ? `${getPhotosEndpoint()}/${firstPhoto.url}`
+    : null;
 
   // Calculate star rating (0-5 scale)
   const rating = gym.averageRating ?? 0;
@@ -160,7 +170,9 @@ function ReviewCard({
   const [imageError, setImageError] = useState(false);
   const firstPhoto =
     review.photos && review.photos.length > 0 ? review.photos[0] : null;
-  const imageUrl = firstPhoto ? `${PHOTOS_ENDPOINT}/${firstPhoto.url}` : null;
+  const imageUrl = firstPhoto
+    ? `${getPhotosEndpoint()}/${firstPhoto.url}`
+    : null;
 
   // Calculate star rating (0-5 scale)
   const rating = review.rating ?? 0;
@@ -430,7 +442,7 @@ export default function GymDetailPage() {
     setError(null);
 
     try {
-      const url = `${GYM_ENDPOINT}/${encodeURIComponent(id)}`;
+      const url = `${getGymEndpoint()}/${encodeURIComponent(id)}`;
       console.log("📡 Fetching gym from:", url);
 
       const response = await fetch(url, {
@@ -477,7 +489,7 @@ export default function GymDetailPage() {
         size: "12",
       });
 
-      const url = `${GYM_ENDPOINT}?${params.toString()}`;
+      const url = `${getGymEndpoint()}?${params.toString()}`;
       console.log("🔍 Fetching nearby gyms from:", url);
       console.log("📍 Parameters:", { latitude, longitude, radius });
 
@@ -529,7 +541,7 @@ export default function GymDetailPage() {
         sort: `${currentSortBy},${currentSortDirection}`,
       });
 
-      const url = `${BACKEND_BASE_URL}/gyms/${encodeURIComponent(
+      const url = `${getBackendBaseUrl()}/gyms/${encodeURIComponent(
         gymId
       )}/reviews?${params.toString()}`;
       console.log("📡 Fetching sorted reviews from:", url);
@@ -597,7 +609,9 @@ export default function GymDetailPage() {
   // Get first photo URL
   const firstPhoto =
     gym?.photos && gym.photos.length > 0 ? gym.photos[0] : null;
-  const imageUrl = firstPhoto ? `${PHOTOS_ENDPOINT}/${firstPhoto.url}` : null;
+  const imageUrl = firstPhoto
+    ? `${getPhotosEndpoint()}/${firstPhoto.url}`
+    : null;
 
   // Calculate star rating
   const rating = gym?.averageRating ?? 0;
@@ -957,7 +971,7 @@ export default function GymDetailPage() {
       const formData = new FormData();
       formData.append("file", file);
 
-      const response = await fetch(UPLOAD_PHOTO_ENDPOINT, {
+      const response = await fetch(getUploadPhotoEndpoint(), {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -1062,7 +1076,7 @@ export default function GymDetailPage() {
 
       // Send PUT request
       const response = await fetch(
-        `${GYM_ENDPOINT}/${encodeURIComponent(gymId)}`,
+        `${getGymEndpoint()}/${encodeURIComponent(gymId)}`,
         {
           method: "PUT",
           headers: {
@@ -1167,7 +1181,7 @@ export default function GymDetailPage() {
     try {
       // Send DELETE request
       const response = await fetch(
-        `${GYM_ENDPOINT}/${encodeURIComponent(gymId)}`,
+        `${getGymEndpoint()}/${encodeURIComponent(gymId)}`,
         {
           method: "DELETE",
           headers: {
@@ -1257,7 +1271,7 @@ export default function GymDetailPage() {
     try {
       // Send DELETE request
       const response = await fetch(
-        `${BACKEND_BASE_URL}/gyms/${encodeURIComponent(
+        `${getBackendBaseUrl()}/gyms/${encodeURIComponent(
           gymId
         )}/reviews/${encodeURIComponent(reviewToDelete)}`,
         {
@@ -2124,7 +2138,7 @@ export default function GymDetailPage() {
                             >
                               <div className="relative">
                                 <img
-                                  src={`${PHOTOS_ENDPOINT}/${photo.url}`}
+                                  src={`${getPhotosEndpoint()}/${photo.url}`}
                                   alt="Existing photo"
                                   className="w-full h-48 object-cover"
                                 />

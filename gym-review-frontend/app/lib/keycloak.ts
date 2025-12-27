@@ -7,45 +7,28 @@
  * und CSRF-Schutz implementiert werden.
  */
 
-// Keycloak Konfiguration - Funktionen um sicherzustellen, dass Environment Variables zur Laufzeit geladen werden
-// WICHTIG: Diese Funktionen lesen die Werte zur Laufzeit, nicht zur Build-Zeit
+import {
+  getKeycloakBaseUrl as getKeycloakBaseUrlFromConfig,
+  getKeycloakRealm,
+  getKeycloakClientId,
+  getBaseUrl as getBaseUrlFromConfig,
+} from "./config";
+
+// Keycloak Konfiguration - Verwende die gemeinsamen Config-Funktionen
 function getKeycloakBaseUrl(): string {
-  if (typeof window !== "undefined") {
-    // Im Browser: Versuche zuerst aus window.__ENV zu lesen (falls gesetzt)
-    const envKeycloakUrl = (window as any).__ENV?.NEXT_PUBLIC_KEYCLOAK_URL;
-    if (envKeycloakUrl) return envKeycloakUrl;
-  }
-  // Fallback zu process.env (wird zur Build-Zeit ersetzt, aber sollte funktionieren)
-  return process.env.NEXT_PUBLIC_KEYCLOAK_URL || "http://localhost:9090";
+  return getKeycloakBaseUrlFromConfig();
 }
 
 function getRealm(): string {
-  if (typeof window !== "undefined") {
-    const envRealm = (window as any).__ENV?.NEXT_PUBLIC_KEYCLOAK_REALM;
-    if (envRealm) return envRealm;
-  }
-  return process.env.NEXT_PUBLIC_KEYCLOAK_REALM || "gym-review";
+  return getKeycloakRealm();
 }
 
 function getClientId(): string {
-  if (typeof window !== "undefined") {
-    const envClientId = (window as any).__ENV?.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID;
-    if (envClientId) return envClientId;
-  }
-  return process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID || "gym-review-app";
+  return getKeycloakClientId();
 }
 
 function getBaseUrl(): string {
-  if (typeof window !== "undefined") {
-    // Im Browser: Verwende window.location.origin als Fallback
-    const envBaseUrl = (window as any).__ENV?.NEXT_PUBLIC_BASE_URL;
-    if (envBaseUrl) return envBaseUrl;
-    // Fallback zu window.location.origin wenn verfügbar
-    if (window.location && window.location.origin) {
-      return process.env.NEXT_PUBLIC_BASE_URL || window.location.origin;
-    }
-  }
-  return process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+  return getBaseUrlFromConfig();
 }
 
 function getRedirectUri(): string {
