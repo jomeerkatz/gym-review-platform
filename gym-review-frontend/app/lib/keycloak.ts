@@ -7,18 +7,35 @@
  * und CSRF-Schutz implementiert werden.
  */
 
-// Keycloak Konfiguration
-const KEYCLOAK_BASE_URL =
-  process.env.NEXT_PUBLIC_KEYCLOAK_URL || "http://localhost:9090";
-const REALM = process.env.NEXT_PUBLIC_KEYCLOAK_REALM || "gym-review";
-const CLIENT_ID =
-  process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID || "gym-review-app";
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-const REDIRECT_URI = `${BASE_URL}/keycloak-callback`;
+// Keycloak Konfiguration - Funktionen um sicherzustellen, dass Environment Variables zur Laufzeit geladen werden
+function getKeycloakBaseUrl(): string {
+  return process.env.NEXT_PUBLIC_KEYCLOAK_URL || "http://localhost:9090";
+}
 
-// Endpoints
-export const AUTH_ENDPOINT = `${KEYCLOAK_BASE_URL}/realms/${REALM}/protocol/openid-connect/auth`;
-export const TOKEN_ENDPOINT = `${KEYCLOAK_BASE_URL}/realms/${REALM}/protocol/openid-connect/token`;
+function getRealm(): string {
+  return process.env.NEXT_PUBLIC_KEYCLOAK_REALM || "gym-review";
+}
+
+function getClientId(): string {
+  return process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID || "gym-review-app";
+}
+
+function getBaseUrl(): string {
+  return process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+}
+
+function getRedirectUri(): string {
+  return `${getBaseUrl()}/keycloak-callback`;
+}
+
+// Endpoints - dynamisch zur Laufzeit berechnet
+export function getAuthEndpoint(): string {
+  return `${getKeycloakBaseUrl()}/realms/${getRealm()}/protocol/openid-connect/auth`;
+}
+
+export function getTokenEndpoint(): string {
+  return `${getKeycloakBaseUrl()}/realms/${getRealm()}/protocol/openid-connect/token`;
+}
 
 // LocalStorage Keys
 const STORAGE_KEY_ACCESS_TOKEN = "kc_access_token";
@@ -119,15 +136,15 @@ export async function buildAuthUrl(): Promise<string> {
   // URL Parameter zusammenbauen
   const params = new URLSearchParams({
     response_type: "code", // Authorization Code Flow
-    client_id: CLIENT_ID, // Unsere Client ID
-    redirect_uri: REDIRECT_URI, // Wohin Keycloak nach dem Login weiterleitet
+    client_id: getClientId(), // Unsere Client ID
+    redirect_uri: getRedirectUri(), // Wohin Keycloak nach dem Login weiterleitet
     scope: "openid", // OpenID Connect Scope
     code_challenge: challenge, // PKCE: Challenge (Hash des Verifiers)
     code_challenge_method: "S256", // PKCE: SHA256 als Hash-Methode
   });
 
   // Vollständige URL zurückgeben
-  return `${AUTH_ENDPOINT}?${params.toString()}`;
+  return `${getAuthEndpoint()}?${params.toString()}`;
 }
 
 /**
@@ -222,7 +239,7 @@ export async function logout(): Promise<void> {
 
   // Build Keycloak logout URL
   const logoutUrl = new URL(
-    `${KEYCLOAK_BASE_URL}/realms/${REALM}/protocol/openid-connect/logout`
+    `${getKeycloakBaseUrl()}/realms/${getRealm()}/protocol/openid-connect/logout`
   );
 
   // Add id_token_hint if available (required by Keycloak)
@@ -231,8 +248,7 @@ export async function logout(): Promise<void> {
   }
 
   // Add post_logout_redirect_uri
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-  logoutUrl.searchParams.set("post_logout_redirect_uri", `${baseUrl}/`);
+  logoutUrl.searchParams.set("post_logout_redirect_uri", `${getBaseUrl()}/`);
 
   // Redirect to Keycloak logout endpoint
   // Keycloak will invalidate the session and redirect back to the home page
@@ -262,7 +278,7 @@ export async function exchangeCodeForToken(code: string): Promise<{
   }
 
   // POST Request an den Token Endpoint
-  const response = await fetch(TOKEN_ENDPOINT, {
+  const response = await fetch(getTokenEndpoint(), {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
@@ -270,8 +286,8 @@ export async function exchangeCodeForToken(code: string): Promise<{
     body: new URLSearchParams({
       grant_type: "authorization_code", // Authorization Code Flow
       code: code, // Der Code aus der URL
-      redirect_uri: REDIRECT_URI, // Muss mit der ursprünglichen Redirect URI übereinstimmen
-      client_id: CLIENT_ID, // Unsere Client ID
+      redirect_uri: getRedirectUri(), // Muss mit der ursprünglichen Redirect URI übereinstimmen
+      client_id: getClientId(), // Unsere Client ID
       code_verifier: codeVerifier, // PKCE: Der ursprüngliche Verifier
     }),
   });
