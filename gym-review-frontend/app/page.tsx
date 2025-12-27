@@ -11,24 +11,17 @@ import {
 } from "./lib/keycloak";
 import { GymSummaryDto, PageResponse } from "./lib/types";
 
-import { getBackendBaseUrl } from "./lib/config";
-
-// Backend configuration - Funktionen um sicherzustellen, dass Environment Variables zur Laufzeit geladen werden
-function getSearchGymsEndpoint(): string {
-  return `${getBackendBaseUrl()}/gyms`;
-}
-
-function getPhotosEndpoint(): string {
-  return `${getBackendBaseUrl()}/photos`;
-}
+// Backend configuration
+const BACKEND_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
+const SEARCH_GYMS_ENDPOINT = `${BACKEND_BASE_URL}/gyms`;
+const PHOTOS_ENDPOINT = `${BACKEND_BASE_URL}/photos`;
 
 // Gym Card Component
 function GymCard({ gym }: { gym: GymSummaryDto }) {
   const [imageError, setImageError] = useState(false);
   const firstPhoto = gym.photos && gym.photos.length > 0 ? gym.photos[0] : null;
-  const imageUrl = firstPhoto
-    ? `${getPhotosEndpoint()}/${firstPhoto.url}`
-    : null;
+  const imageUrl = firstPhoto ? `${PHOTOS_ENDPOINT}/${firstPhoto.url}` : null;
 
   // Calculate star rating (0-5 scale)
   const rating = gym.averageRating ?? 0;
@@ -195,15 +188,15 @@ export default function Home() {
         size: "8",
       });
 
-      const endpoint = getSearchGymsEndpoint();
-      console.log("🔍 Fetching gyms from:", `${endpoint}?${params.toString()}`);
-
-      const response = await fetch(`${endpoint}?${params.toString()}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        `${SEARCH_GYMS_ENDPOINT}?${params.toString()}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       // Store status code even if not ok
       const statusCode = response.status;
@@ -385,7 +378,7 @@ export default function Home() {
                 {isNetworkError && (
                   <p className="text-xs text-red-600 dark:text-red-400 mb-4">
                     💡 Make sure the backend server is running on{" "}
-                    <span className="font-mono">{getBackendBaseUrl()}</span>
+                    <span className="font-mono">{BACKEND_BASE_URL}</span>
                   </p>
                 )}
                 <button

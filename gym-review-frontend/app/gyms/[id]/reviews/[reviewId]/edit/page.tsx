@@ -9,16 +9,11 @@ import {
 } from "../../../../../lib/types";
 import { isLoggedIn } from "../../../../../lib/keycloak";
 
-import { getBackendBaseUrl } from "../../../../../lib/config";
-
-// Backend configuration - Funktionen um sicherzustellen, dass Environment Variables zur Laufzeit geladen werden
-function getUploadPhotoEndpoint(): string {
-  return `${getBackendBaseUrl()}/photos`;
-}
-
-function getPhotosEndpoint(): string {
-  return `${getBackendBaseUrl()}/photos`;
-}
+// Backend configuration
+const BACKEND_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
+const UPLOAD_PHOTO_ENDPOINT = `${BACKEND_BASE_URL}/photos`;
+const PHOTOS_ENDPOINT = `${BACKEND_BASE_URL}/photos`;
 const TOKEN_STORAGE_KEY = "kc_access_token";
 const MAX_PHOTOS = 5;
 
@@ -75,7 +70,7 @@ export default function EditReviewPage() {
     setReviewError(null);
 
     try {
-      const url = `${getBackendBaseUrl()}/gyms/${encodeURIComponent(
+      const url = `${BACKEND_BASE_URL}/gyms/${encodeURIComponent(
         gymId
       )}/reviews/${encodeURIComponent(reviewId)}`;
       console.log("📡 Fetching review from:", url);
@@ -285,7 +280,7 @@ export default function EditReviewPage() {
       const formData = new FormData();
       formData.append("file", file);
 
-      const response = await fetch(getUploadPhotoEndpoint(), {
+      const response = await fetch(UPLOAD_PHOTO_ENDPOINT, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -355,7 +350,7 @@ export default function EditReviewPage() {
 
       // Send PUT request
       const response = await fetch(
-        `${getBackendBaseUrl()}/gyms/${encodeURIComponent(
+        `${BACKEND_BASE_URL}/gyms/${encodeURIComponent(
           gymId
         )}/reviews/${encodeURIComponent(reviewId)}`,
         {
@@ -571,7 +566,7 @@ export default function EditReviewPage() {
                           >
                             <div className="relative">
                               <img
-                                src={`${getPhotosEndpoint()}/${photo.url}`}
+                                src={`${PHOTOS_ENDPOINT}/${photo.url}`}
                                 alt="Existing photo"
                                 className="w-full h-48 object-cover"
                               />

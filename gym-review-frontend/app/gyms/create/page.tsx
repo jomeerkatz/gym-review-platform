@@ -20,16 +20,10 @@ import {
   GymDto,
 } from "../../lib/types";
 
-import { getBackendBaseUrl } from "../../lib/config";
-
-// Backend configuration - Funktionen um sicherzustellen, dass Environment Variables zur Laufzeit geladen werden
-function getCreateGymEndpoint(): string {
-  return `${getBackendBaseUrl()}/gyms`;
-}
-
-function getUploadPhotoEndpoint(): string {
-  return `${getBackendBaseUrl()}/photos`;
-}
+// Backend configuration
+const BACKEND_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
+const CREATE_GYM_ENDPOINT = `${BACKEND_BASE_URL}/gyms`;
+const UPLOAD_PHOTO_ENDPOINT = `${BACKEND_BASE_URL}/photos`;
 const TOKEN_STORAGE_KEY = "kc_access_token";
 
 // Days of the week for operating hours
@@ -222,7 +216,7 @@ export default function CreateGymPage() {
       const formData = new FormData();
       formData.append("file", file);
 
-      const response = await fetch(getUploadPhotoEndpoint(), {
+      const response = await fetch(UPLOAD_PHOTO_ENDPOINT, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -465,7 +459,7 @@ export default function CreateGymPage() {
       };
 
       // Send POST request
-      const response = await fetch(getCreateGymEndpoint(), {
+      const response = await fetch(CREATE_GYM_ENDPOINT, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
