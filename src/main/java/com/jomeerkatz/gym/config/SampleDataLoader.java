@@ -95,7 +95,7 @@ public class SampleDataLoader {
         @Override
         public boolean isEmpty() {
             try {
-                return Files.size(Paths.get(resource.getFile().toURI())) == 0;
+                return resource.getContentAsByteArray().length == 0;
             } catch (IOException e) {
                 return true;
             }
@@ -104,7 +104,7 @@ public class SampleDataLoader {
         @Override
         public long getSize() {
             try {
-                return Files.size(Paths.get(resource.getFile().toURI()));
+                return resource.getContentAsByteArray().length;
             } catch (IOException e) {
                 return 0;
             }
