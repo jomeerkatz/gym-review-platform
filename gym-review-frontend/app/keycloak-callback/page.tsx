@@ -44,11 +44,11 @@ function KeycloakCallbackContent() {
           
           if (error) {
             throw new Error(
-              `Keycloak Fehler: ${error}${errorDescription ? ` - ${errorDescription}` : ''}`
+              `Keycloak error: ${error}${errorDescription ? ` - ${errorDescription}` : ''}`
             );
           }
           
-          throw new Error('Kein Authorization Code in der URL gefunden.');
+          throw new Error('No authorization code found in URL.');
         }
 
         // 2. Code gegen Access Token tauschen
@@ -76,14 +76,14 @@ function KeycloakCallbackContent() {
         }, 1500);
 
       } catch (error) {
-        // Fehlerbehandlung
-        console.error('Fehler im Callback:', error);
+        // Error handling
+        console.error('Error in callback:', error);
         setStatus('error');
         setErrorMessage(
-          error instanceof Error ? error.message : 'Unbekannter Fehler beim Token-Austausch'
+          error instanceof Error ? error.message : 'Unknown error during token exchange'
         );
         
-        // Nach 3 Sekunden zur Startseite weiterleiten (auch bei Fehler)
+        // Redirect to home page after 3 seconds (even on error)
         setTimeout(() => {
           router.push('/');
         }, 3000);
@@ -103,7 +103,7 @@ function KeycloakCallbackContent() {
             <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"></div>
           </div>
           <p className="text-lg text-zinc-600 dark:text-zinc-400">
-            Verarbeite Login...
+            Processing login...
           </p>
         </div>
       </div>
@@ -131,10 +131,10 @@ function KeycloakCallbackContent() {
             </svg>
           </div>
           <h2 className="text-2xl font-bold text-green-600 dark:text-green-400 mb-2">
-            Login erfolgreich!
+            Login successful!
           </h2>
           <p className="text-zinc-600 dark:text-zinc-400">
-            Sie werden zur Startseite weitergeleitet...
+            You will be redirected to the home page...
           </p>
         </div>
       </div>
@@ -161,13 +161,13 @@ function KeycloakCallbackContent() {
           </svg>
         </div>
         <h2 className="text-2xl font-bold text-red-600 dark:text-red-400 mb-2">
-          Login fehlgeschlagen
+          Login failed
         </h2>
         <p className="text-zinc-600 dark:text-zinc-400 mb-4">
           {errorMessage}
         </p>
         <p className="text-sm text-zinc-500 dark:text-zinc-500">
-          Sie werden zur Startseite weitergeleitet...
+          You will be redirected to the home page...
         </p>
       </div>
     </div>

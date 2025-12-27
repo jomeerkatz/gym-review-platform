@@ -113,7 +113,7 @@ export default function CreateReviewPage() {
   const uploadAllPhotos = async (): Promise<string[]> => {
     const token = localStorage.getItem(TOKEN_STORAGE_KEY);
     if (!token) {
-      throw new Error("Kein Access Token gefunden. Bitte zuerst einloggen.");
+      throw new Error("No access token found. Please log in first.");
     }
 
     const photoIds: string[] = [];
@@ -134,7 +134,7 @@ export default function CreateReviewPage() {
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(
-          `Foto-Upload fehlgeschlagen: ${response.statusText} - ${errorText}`
+          `Photo upload failed: ${response.statusText} - ${errorText}`
         );
       }
 
@@ -143,7 +143,7 @@ export default function CreateReviewPage() {
         const photoData: { url: string } = JSON.parse(responseText);
         photoIds.push(photoData.url);
       } catch (parseError) {
-        throw new Error("Response konnte nicht geparst werden.");
+        throw new Error("Response could not be parsed.");
       }
     }
 
@@ -208,7 +208,7 @@ export default function CreateReviewPage() {
     // Check for token
     const token = localStorage.getItem(TOKEN_STORAGE_KEY);
     if (!token) {
-      setErrorMessage("Kein Access Token gefunden. Bitte zuerst einloggen.");
+      setErrorMessage("No access token found. Please log in first.");
       setHasToken(false);
       return;
     }
@@ -259,11 +259,11 @@ export default function CreateReviewPage() {
           setErrorMessage(
             errorData.message ||
               errorData.error ||
-              `Fehler beim Erstellen der Bewertung: ${response.statusText}`
+              `Error creating review: ${response.statusText}`
           );
         } catch {
           setErrorMessage(
-            `Fehler beim Erstellen der Bewertung: ${response.statusText}`
+            `Error creating review: ${response.statusText}`
           );
         }
       }
@@ -271,8 +271,8 @@ export default function CreateReviewPage() {
       setIsSuccess(false);
       setErrorMessage(
         error instanceof Error
-          ? `Netzwerkfehler: ${error.message}`
-          : "Unbekannter Fehler beim Erstellen der Bewertung"
+          ? `Network error: ${error.message}`
+          : "Unknown error creating review"
       );
     } finally {
       setIsSubmitting(false);

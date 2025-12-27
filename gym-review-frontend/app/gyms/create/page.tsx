@@ -206,7 +206,7 @@ export default function CreateGymPage() {
   const uploadAllPhotos = async (): Promise<string[]> => {
     const token = localStorage.getItem(TOKEN_STORAGE_KEY);
     if (!token) {
-      throw new Error("Kein Access Token gefunden. Bitte zuerst einloggen.");
+      throw new Error("No access token found. Please log in first.");
     }
 
     const photoIds: string[] = [];
@@ -227,7 +227,7 @@ export default function CreateGymPage() {
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(
-          `Foto-Upload fehlgeschlagen: ${response.statusText} - ${errorText}`
+          `Photo upload failed: ${response.statusText} - ${errorText}`
         );
       }
 
@@ -236,7 +236,7 @@ export default function CreateGymPage() {
         const photoData: { url: string } = JSON.parse(responseText);
         photoIds.push(photoData.url);
       } catch (parseError) {
-        throw new Error("Response konnte nicht geparst werden.");
+        throw new Error("Response could not be parsed.");
       }
     }
 

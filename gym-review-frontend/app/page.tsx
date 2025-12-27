@@ -1,6 +1,5 @@
 "use client";
 
-import KeycloakDebug from "./KeycloakDebug";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
@@ -134,7 +133,6 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [errorCode, setErrorCode] = useState<number | null>(null);
   const [isNetworkError, setIsNetworkError] = useState<boolean>(false);
-  const [showKeycloakDebug, setShowKeycloakDebug] = useState<boolean>(false);
 
   // Check for token and login status
   useEffect(() => {
@@ -215,19 +213,6 @@ export default function Home() {
       }
 
       const data: PageResponse<GymSummaryDto> = await response.json();
-
-      // Log Address structure for debugging
-      console.log("=== Gym Response Data ===");
-      console.log("RAW PAGE RESPONSE:", JSON.stringify(data, null, 2));
-      data.content.forEach((gym, index) => {
-        console.log(`Gym ${index + 1} (${gym.name}):`, {
-          address: gym.address,
-          addressType: typeof gym.address,
-          addressIsNull: gym.address === null,
-          addressIsUndefined: gym.address === undefined,
-        });
-      });
-      console.log("========================");
 
       setGyms(data.content);
       setTotalPages(data.totalPages);
@@ -334,8 +319,6 @@ export default function Home() {
 
       {/* Main Content Section - starts right after hero */}
       <main className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-12 md:py-16 bg-zinc-50 dark:bg-black">
-        {showKeycloakDebug && <KeycloakDebug />}
-
         {/* Gym Grid Section */}
         <div className="mt-12">
           {isLoading && (
@@ -453,21 +436,6 @@ export default function Home() {
                 in Hamburg. We empower the community to share honest reviews and
                 discover their perfect training space.
               </p>
-            </div>
-
-            {/* Debug Toggle */}
-            <div className="flex items-center gap-3">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={showKeycloakDebug}
-                  onChange={(e) => setShowKeycloakDebug(e.target.checked)}
-                  className="w-4 h-4 rounded border-yellow-200 dark:border-yellow-800 bg-zinc-800 dark:bg-zinc-900 checked:bg-yellow-600 focus:ring-2 focus:ring-yellow-500"
-                />
-                <span className="text-sm sm:text-base text-zinc-300 dark:text-zinc-400">
-                  Debug
-                </span>
-              </label>
             </div>
           </div>
         </div>

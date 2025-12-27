@@ -1,10 +1,7 @@
 /**
- * Keycloak Debug Utilities
+ * Keycloak Utilities
  *
  * Diese Datei enthält Hilfsfunktionen für die Keycloak-Integration.
- * WICHTIG: Diese Implementierung ist nur für lokale Entwicklung und Debugging gedacht.
- * In Produktion sollten Sicherheitsaspekte wie Token-Refresh, sichere Speicherung
- * und CSRF-Schutz implementiert werden.
  */
 
 // Keycloak Konfiguration - Funktionen um sicherzustellen, dass Environment Variables zur Laufzeit geladen werden
@@ -165,18 +162,6 @@ export async function buildAuthUrl(): Promise<string> {
   const redirectUri = getRedirectUri();
   const authEndpoint = getAuthEndpoint();
 
-  // Debug logging (immer, um zu sehen was verwendet wird)
-  console.log("🔍 Keycloak Config:", {
-    keycloakUrl,
-    realm,
-    clientId,
-    baseUrl,
-    redirectUri,
-    authEndpoint,
-    envKeycloakUrl: process.env.NEXT_PUBLIC_KEYCLOAK_URL,
-    envBaseUrl: process.env.NEXT_PUBLIC_BASE_URL,
-  });
-
   // URL Parameter zusammenbauen
   const params = new URLSearchParams({
     response_type: "code", // Authorization Code Flow
@@ -189,8 +174,6 @@ export async function buildAuthUrl(): Promise<string> {
 
   // Vollständige URL zurückgeben
   const finalUrl = `${authEndpoint}?${params.toString()}`;
-
-  console.log("🔗 Final Auth URL:", finalUrl);
 
   return finalUrl;
 }
@@ -320,9 +303,7 @@ export async function exchangeCodeForToken(code: string): Promise<{
   const codeVerifier = getCodeVerifier();
 
   if (!codeVerifier) {
-    throw new Error(
-      "Code verifier nicht gefunden. Bitte Login erneut versuchen."
-    );
+    throw new Error("Code verifier not found. Please try logging in again.");
   }
 
   // POST Request an den Token Endpoint
@@ -342,9 +323,7 @@ export async function exchangeCodeForToken(code: string): Promise<{
 
   if (!response.ok) {
     const errorText = await response.text();
-    throw new Error(
-      `Token-Austausch fehlgeschlagen: ${response.status} ${errorText}`
-    );
+    throw new Error(`Token exchange failed: ${response.status} ${errorText}`);
   }
 
   const data = await response.json();

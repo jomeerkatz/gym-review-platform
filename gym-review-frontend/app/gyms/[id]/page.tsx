@@ -327,9 +327,6 @@ export default function GymDetailPage() {
   const router = useRouter();
   const gymId = params.id as string;
 
-  console.log("🔍 Component mounted, params:", params);
-  console.log("🔍 gymId:", gymId);
-
   const [gym, setGym] = useState<GymDto | null>(null);
   const [nearbyGyms, setNearbyGyms] = useState<GymSummaryDto[]>([]);
   const [isLoadingGym, setIsLoadingGym] = useState<boolean>(true);
@@ -425,13 +422,11 @@ export default function GymDetailPage() {
 
   // Fetch gym details
   const fetchGymDetails = async (id: string) => {
-    console.log("🚀 fetchGymDetails called with id:", id);
     setIsLoadingGym(true);
     setError(null);
 
     try {
       const url = `${GYM_ENDPOINT}/${encodeURIComponent(id)}`;
-      console.log("📡 Fetching gym from:", url);
 
       const response = await fetch(url, {
         method: "GET",
@@ -439,8 +434,6 @@ export default function GymDetailPage() {
           "Content-Type": "application/json",
         },
       });
-
-      console.log("✅ Response:", response.status, response.statusText);
 
       if (!response.ok) {
         if (response.status === 404) {
@@ -478,8 +471,6 @@ export default function GymDetailPage() {
       });
 
       const url = `${GYM_ENDPOINT}?${params.toString()}`;
-      console.log("🔍 Fetching nearby gyms from:", url);
-      console.log("📍 Parameters:", { latitude, longitude, radius });
 
       const response = await fetch(url, {
         method: "GET",
@@ -488,15 +479,11 @@ export default function GymDetailPage() {
         },
       });
 
-      console.log("✅ Response status:", response.status, response.statusText);
-
       if (!response.ok) {
         throw new Error(`Failed to fetch nearby gyms: ${response.statusText}`);
       }
 
       const data: PageResponse<GymSummaryDto> = await response.json();
-      console.log("📦 Nearby gyms data:", data);
-      console.log("�� Nearby gyms BEFORE filter:", data.content);
 
       // Filter out the current gym from nearby results
       const filtered = data.content.filter((g) => g.id !== gymId);
@@ -532,7 +519,6 @@ export default function GymDetailPage() {
       const url = `${BACKEND_BASE_URL}/gyms/${encodeURIComponent(
         gymId
       )}/reviews?${params.toString()}`;
-      console.log("📡 Fetching sorted reviews from:", url);
 
       const response = await fetch(url, {
         method: "GET",
@@ -568,29 +554,20 @@ export default function GymDetailPage() {
 
   // Fetch gym details on mount
   useEffect(() => {
-    console.log("🔄 useEffect triggered, gymId:", gymId);
     if (gymId) {
-      console.log("✅ gymId exists, calling fetchGymDetails");
       fetchGymDetails(gymId);
-    } else {
-      console.warn("⚠️ gymId is undefined or empty!");
     }
   }, [gymId]);
 
   // Fetch nearby gyms when gym details are loaded
   useEffect(() => {
-    console.log("��️ Gym loaded:", gym);
-    console.log("�� GeoLocation:", gym?.geoLocation);
-
     if (gym?.geoLocation?.lat && gym?.geoLocation?.lon) {
-      console.log("🚀 Fetching nearby gyms...");
       fetchNearbyGyms(
         gym.geoLocation.lat, // Use "lat" instead of "latitude"
         gym.geoLocation.lon, // Use "lon" instead of "longitude"
         DEFAULT_RADIUS
       );
     } else {
-      console.log("⚠️ No geoLocation available, skipping nearby gyms fetch");
     }
   }, [gym]);
 
@@ -947,7 +924,7 @@ export default function GymDetailPage() {
   const uploadNewPhotos = async (): Promise<string[]> => {
     const token = localStorage.getItem(TOKEN_STORAGE_KEY);
     if (!token) {
-      throw new Error("Kein Access Token gefunden. Bitte zuerst einloggen.");
+      throw new Error("No access token found. Please log in first.");
     }
 
     const photoIds: string[] = [];
@@ -968,7 +945,7 @@ export default function GymDetailPage() {
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(
-          `Foto-Upload fehlgeschlagen: ${response.statusText} - ${errorText}`
+          `Photo upload failed: ${response.statusText} - ${errorText}`
         );
       }
 
@@ -977,7 +954,7 @@ export default function GymDetailPage() {
         const photoData: { url: string } = JSON.parse(responseText);
         photoIds.push(photoData.url);
       } catch (parseError) {
-        throw new Error("Response konnte nicht geparst werden.");
+        throw new Error("Response could not be parsed.");
       }
     }
 
@@ -1002,9 +979,7 @@ export default function GymDetailPage() {
     // Check for token
     const token = localStorage.getItem(TOKEN_STORAGE_KEY);
     if (!token) {
-      setUpdateErrorMessage(
-        "Kein Access Token gefunden. Bitte zuerst einloggen."
-      );
+      setUpdateErrorMessage("No access token found. Please log in first.");
       setHasToken(false);
       return;
     }
@@ -1091,7 +1066,7 @@ export default function GymDetailPage() {
         } catch (parseError) {
           setUpdateSuccess(true);
           setUpdateErrorMessage(
-            "Gym erfolgreich aktualisiert, aber Response konnte nicht geparst werden."
+            "Gym successfully updated, but response could not be parsed."
           );
         }
       } else {
@@ -1102,20 +1077,18 @@ export default function GymDetailPage() {
           setUpdateErrorMessage(
             errorData.message ||
               errorData.error ||
-              `Fehler beim Aktualisieren: ${response.statusText}`
+              `Error updating: ${response.statusText}`
           );
         } catch {
-          setUpdateErrorMessage(
-            `Fehler beim Aktualisieren: ${response.statusText}`
-          );
+          setUpdateErrorMessage(`Error updating: ${response.statusText}`);
         }
       }
     } catch (error) {
       setUpdateSuccess(false);
       setUpdateErrorMessage(
         error instanceof Error
-          ? `Netzwerkfehler: ${error.message}`
-          : "Unbekannter Fehler beim Aktualisieren"
+          ? `Network error: ${error.message}`
+          : "Unknown error updating"
       );
     } finally {
       setIsUpdating(false);
@@ -1155,9 +1128,7 @@ export default function GymDetailPage() {
     // Check for token
     const token = localStorage.getItem(TOKEN_STORAGE_KEY);
     if (!token) {
-      setDeleteErrorMessage(
-        "Kein Access Token gefunden. Bitte zuerst einloggen."
-      );
+      setDeleteErrorMessage("No access token found. Please log in first.");
       setHasToken(false);
       return;
     }
@@ -1194,18 +1165,18 @@ export default function GymDetailPage() {
           setDeleteErrorMessage(
             errorData.message ||
               errorData.error ||
-              `Fehler beim Löschen: ${response.statusText}`
+              `Error deleting: ${response.statusText}`
           );
         } catch {
-          setDeleteErrorMessage(`Fehler beim Löschen: ${response.statusText}`);
+          setDeleteErrorMessage(`Error deleting: ${response.statusText}`);
         }
       }
     } catch (error) {
       setDeleteSuccess(false);
       setDeleteErrorMessage(
         error instanceof Error
-          ? `Netzwerkfehler: ${error.message}`
-          : "Unbekannter Fehler beim Löschen"
+          ? `Network error: ${error.message}`
+          : "Unknown error deleting"
       );
     } finally {
       setIsDeleting(false);
@@ -1246,7 +1217,7 @@ export default function GymDetailPage() {
     const token = localStorage.getItem(TOKEN_STORAGE_KEY);
     if (!token) {
       setDeleteReviewErrorMessage(
-        "Kein Access Token gefunden. Bitte zuerst einloggen."
+        "No access token found. Please log in first."
       );
       setHasToken(false);
       return;
@@ -1294,20 +1265,18 @@ export default function GymDetailPage() {
           setDeleteReviewErrorMessage(
             errorData.message ||
               errorData.error ||
-              `Fehler beim Löschen: ${response.statusText}`
+              `Error deleting: ${response.statusText}`
           );
         } catch {
-          setDeleteReviewErrorMessage(
-            `Fehler beim Löschen: ${response.statusText}`
-          );
+          setDeleteReviewErrorMessage(`Error deleting: ${response.statusText}`);
         }
       }
     } catch (error) {
       setDeleteReviewSuccess(false);
       setDeleteReviewErrorMessage(
         error instanceof Error
-          ? `Netzwerkfehler: ${error.message}`
-          : "Unbekannter Fehler beim Löschen"
+          ? `Network error: ${error.message}`
+          : "Unknown error deleting"
       );
     } finally {
       setIsDeletingReview(false);
@@ -1714,7 +1683,7 @@ export default function GymDetailPage() {
             <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-xl border border-zinc-200 dark:border-zinc-800 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
               <div className="sticky top-0 bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 p-6 flex justify-between items-center">
                 <h2 className="text-2xl font-bold text-black dark:text-zinc-50">
-                  Gym aktualisieren
+                  Update Gym
                 </h2>
                 <button
                   onClick={closeEditModal}
@@ -2216,7 +2185,7 @@ export default function GymDetailPage() {
                 {updateSuccess && (
                   <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
                     <h3 className="text-lg font-semibold mb-2 text-green-800 dark:text-green-200">
-                      ✅ Gym erfolgreich aktualisiert!
+                      ✅ Gym successfully updated!
                     </h3>
                   </div>
                 )}
@@ -2225,7 +2194,7 @@ export default function GymDetailPage() {
                 {updateErrorMessage && (
                   <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
                     <h3 className="text-lg font-semibold mb-2 text-red-800 dark:text-red-200">
-                      ❌ Fehler
+                      ❌ Error
                     </h3>
                     <p className="text-sm text-red-700 dark:text-red-300">
                       {updateErrorMessage}
@@ -2245,15 +2214,15 @@ export default function GymDetailPage() {
                     }`}
                   >
                     {isUpdating
-                      ? "Fotos werden hochgeladen und Gym wird aktualisiert…"
-                      : "Gym aktualisieren"}
+                      ? "Uploading photos and updating gym…"
+                      : "Update Gym"}
                   </button>
                   <button
                     type="button"
                     onClick={closeEditModal}
                     className="px-6 py-3 font-medium rounded-lg bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-black dark:text-zinc-50 transition-colors"
                   >
-                    Abbrechen
+                    Cancel
                   </button>
                 </div>
               </form>
@@ -2267,14 +2236,14 @@ export default function GymDetailPage() {
             <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-xl border border-zinc-200 dark:border-zinc-800 w-full max-w-md">
               <div className="p-6">
                 <h2 className="text-2xl font-bold text-black dark:text-zinc-50 mb-4">
-                  Gym löschen
+                  Delete Gym
                 </h2>
 
                 {!deleteSuccess ? (
                   <>
                     <div className="mb-6">
                       <p className="text-zinc-700 dark:text-zinc-300 mb-2">
-                        Sind Sie sicher, dass Sie dieses Gym löschen möchten?
+                        Are you sure you want to delete this gym?
                       </p>
                       {gym && (
                         <p className="text-lg font-semibold text-red-600 dark:text-red-400">
@@ -2282,7 +2251,7 @@ export default function GymDetailPage() {
                         </p>
                       )}
                       <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-2">
-                        Diese Aktion kann nicht rückgängig gemacht werden.
+                        This action cannot be undone.
                       </p>
                     </div>
 
@@ -2306,7 +2275,7 @@ export default function GymDetailPage() {
                             : "bg-red-600 hover:bg-red-700 text-white cursor-pointer"
                         }`}
                       >
-                        {isDeleting ? "Wird gelöscht…" : "Ja, ich bin sicher"}
+                        {isDeleting ? "Deleting…" : "Yes, I'm sure"}
                       </button>
                       <button
                         onClick={closeDeleteModal}
@@ -2317,7 +2286,7 @@ export default function GymDetailPage() {
                             : "bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-black dark:text-zinc-50 cursor-pointer"
                         }`}
                       >
-                        Abbrechen
+                        Cancel
                       </button>
                     </div>
                   </>
@@ -2326,10 +2295,10 @@ export default function GymDetailPage() {
                     {/* Success Message */}
                     <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
                       <p className="text-lg font-semibold text-green-800 dark:text-green-200 mb-2">
-                        ✅ Gym erfolgreich gelöscht!
+                        ✅ Gym successfully deleted!
                       </p>
                       <p className="text-sm text-green-700 dark:text-green-300">
-                        Sie werden zur Startseite weitergeleitet…
+                        You will be redirected to the home page…
                       </p>
                     </div>
                   </>
@@ -2345,17 +2314,17 @@ export default function GymDetailPage() {
             <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-xl border border-zinc-200 dark:border-zinc-800 w-full max-w-md">
               <div className="p-6">
                 <h2 className="text-2xl font-bold text-black dark:text-zinc-50 mb-4">
-                  Review löschen
+                  Delete Review
                 </h2>
 
                 {!deleteReviewSuccess ? (
                   <>
                     <div className="mb-6">
                       <p className="text-zinc-700 dark:text-zinc-300 mb-2">
-                        Sind Sie sicher, dass Sie dieses Review löschen möchten?
+                        Are you sure you want to delete this review?
                       </p>
                       <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-2">
-                        Diese Aktion kann nicht rückgängig gemacht werden.
+                        This action cannot be undone.
                       </p>
                     </div>
 
@@ -2379,9 +2348,7 @@ export default function GymDetailPage() {
                             : "bg-red-600 hover:bg-red-700 text-white cursor-pointer"
                         }`}
                       >
-                        {isDeletingReview
-                          ? "Wird gelöscht…"
-                          : "Ja, ich bin sicher"}
+                        {isDeletingReview ? "Deleting…" : "Yes, I'm sure"}
                       </button>
                       <button
                         onClick={closeDeleteReviewModal}
@@ -2392,7 +2359,7 @@ export default function GymDetailPage() {
                             : "bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-black dark:text-zinc-50 cursor-pointer"
                         }`}
                       >
-                        Abbrechen
+                        Cancel
                       </button>
                     </div>
                   </>
@@ -2401,10 +2368,10 @@ export default function GymDetailPage() {
                     {/* Success Message */}
                     <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
                       <p className="text-lg font-semibold text-green-800 dark:text-green-200 mb-2">
-                        ✅ Review erfolgreich gelöscht!
+                        ✅ Review successfully deleted!
                       </p>
                       <p className="text-sm text-green-700 dark:text-green-300">
-                        Das Review wird aktualisiert…
+                        The review is being updated…
                       </p>
                     </div>
                   </>
