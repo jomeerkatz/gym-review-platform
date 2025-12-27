@@ -11,7 +11,8 @@
 const KEYCLOAK_BASE_URL = "http://localhost:9090";
 const REALM = "gym-review";
 const CLIENT_ID = "gym-review-app";
-const REDIRECT_URI = "http://localhost:3000/keycloak-callback";
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+const REDIRECT_URI = `${BASE_URL}/keycloak-callback`;
 
 // Endpoints
 export const AUTH_ENDPOINT = `${KEYCLOAK_BASE_URL}/realms/${REALM}/protocol/openid-connect/auth`;
@@ -228,10 +229,8 @@ export async function logout(): Promise<void> {
   }
 
   // Add post_logout_redirect_uri
-  logoutUrl.searchParams.set(
-    "post_logout_redirect_uri",
-    "http://localhost:3000/"
-  );
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+  logoutUrl.searchParams.set("post_logout_redirect_uri", `${baseUrl}/`);
 
   // Redirect to Keycloak logout endpoint
   // Keycloak will invalidate the session and redirect back to the home page
