@@ -8,10 +8,8 @@ Backend-focused portfolio project: a secure Gym Review API with full-text & geo 
 
 ## Demo
 
-_A short walkthrough video will be added here._
-
 ```text
-▶️ YouTube demo link goes here
+https://youtu.be/9KHtKQem0MI
 ```
 
 ---
