@@ -28,6 +28,8 @@ This repository demonstrates:
 
 The domain (gyms & fitness) is just a concrete use case; the focus is on backend architecture and production-style concerns, not on the hobby itself.
 
+
+<img width="1065" height="791" alt="image" src="https://github.com/user-attachments/assets/2b9e2912-6b2a-4b40-80cd-477457af3d8f" />
 ---
 
 ## High-level overview
